@@ -22,7 +22,7 @@ export default function Home() {
     return format(new Date(dateString), "dd MMM yyy");
   }
 
-  // hides part of the email with ***
+  // hides part of the email with ***!
 
   function maskEmailDomain(email: string) {
     const [localPart, domain] = email.split("@");
