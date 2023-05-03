@@ -1,6 +1,10 @@
 import Link from "next/link";
+import useLocalStorage from "use-local-storage";
 
 export function Header() {
+  const [token, seToken] = useLocalStorage<string | null>("token", null);
+  const [theme, seTheme] = useLocalStorage<string>("theme", "light");
+  console.log(theme);
   return (
     <div className="navbar bg-base-100 border border-b mb-10">
       <div className="flex-1 pl-4">
@@ -23,15 +27,34 @@ export function Header() {
             </Link>
             <ul className="p-2 bg-base-100">
               <li>
-                <Link href="">Dark mode</Link>
+                <Link
+                  href=""
+                  onClick={() => {
+                    seTheme("dark");
+                  }}
+                >
+                  Dark mode
+                </Link>
               </li>
               <li>
-                <Link href="">Light mode</Link>
+                <Link
+                  href=""
+                  onClick={() => {
+                    seTheme("light");
+                  }}
+                >
+                  Light mode
+                </Link>
               </li>
             </ul>
           </li>
           <li>
-            <Link href="/login">Logout</Link>
+            <Link
+              onClick={() => seToken(!token ? "logedin" : null)}
+              href={!token ? "/" : "/login"}
+            >
+              {!token ? "Login" : "Logout"}
+            </Link>
           </li>
         </ul>
       </div>

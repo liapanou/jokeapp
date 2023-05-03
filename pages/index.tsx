@@ -2,9 +2,12 @@ import { Header } from "@/components/header";
 import axios from "axios";
 import clsx from "clsx";
 import { format } from "date-fns";
+import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import useLocalStorage from "use-local-storage";
 
 export default function Home() {
+  const router = useRouter();
   const [jokes, setJokes] = useState<
     {
       id: number;
@@ -15,6 +18,8 @@ export default function Home() {
       CreatedAt: string;
     }[]
   >([]);
+
+  const [token, seToken] = useLocalStorage<string | null>("token", null);
 
   // converts the numeric date to the full date
 
@@ -37,6 +42,13 @@ export default function Home() {
     return `${localPart}@${maskedDomain}`;
   }
 
+  useEffect(() => {
+    if (!token) {
+      router.push("/login");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [token]);
+
   // brings the data from the server in every render and saves them in a state
 
   useEffect(() => {
@@ -51,25 +63,21 @@ export default function Home() {
       <div className="h-full min-h-screen w-screen bg-white  dark:bg-slate-800">
         <Header />
         <div className="px-8">
-          <div className="flex justify-center items-center gap-6 mb-6">
-            <div className="flex justify-center items-center gap-6">
-              <button className="font-bold">{"<"}</button>
-              <select className="select select-ghost w-full max-w-xs border-none">
-                <option disabled selected>
-                  Pick of showing jokes
-                </option>
+          <div className="flex mb-6">
+            <div className=" justify-center items-center">
+              <select className=" select select-ghost w-full max-w-xs border-none">
                 <option>Show 5 jokes</option>
                 <option>Show 10 jokes</option>
               </select>
-              <button className="font-bold">{">"}</button>
-              <button className=" btn bg-black  normal-case w-auto h-fit px-4 py-4 ml-4 ">
-                <span className="text-lg mr-2"> + </span>
-                <span className="text-lg">New Joke</span>
-              </button>
             </div>
+
+            <button className=" btn bg-black  normal-case w-auto h-fit px-4 py-4 mr-6 ">
+              <span className="text-lg mr-2"> + </span>
+              <span className="text-lg">New Joke</span>
+            </button>
           </div>
 
-          <div className="overflow-auto flex justify-center items-center mb-6 ">
+          <div className="overflow-auto flex justify-center items-center mb-8 ">
             <table className=" table-fixed  border-collapse border-spacing-6 text-center  ">
               {/* head */}
               <thead>
@@ -119,6 +127,10 @@ export default function Home() {
                 })}
               </tbody>
             </table>
+          </div>
+          <div className="flex justify-center items-center ">
+            <button className="font-bold mr-8">{"< Prev"}</button>
+            <button className="font-bold">{"Next >"}</button>
           </div>
         </div>
       </div>
