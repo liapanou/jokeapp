@@ -25,3 +25,20 @@ body {
     )
     rgb(var(--background-start-rgb));
 }
+
+
+.tomato {
+  color:tomato
+}
+
+.orange{
+  color:orange
+}
+
+.yellow{
+  color:yellow
+}
+
+.green{
+  color:green
+}
