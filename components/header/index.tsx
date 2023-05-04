@@ -4,7 +4,7 @@ import useLocalStorage from "use-local-storage";
 export function Header() {
   const [token, seToken] = useLocalStorage<string | null>("token", null);
   const [theme, seTheme] = useLocalStorage<string>("theme", "light");
-  console.log(theme);
+
   return (
     <div className="navbar bg-base-100 border border-b mb-10">
       <div className="flex-1 pl-4">
