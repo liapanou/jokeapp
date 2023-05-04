@@ -8,6 +8,7 @@ import useLocalStorage from "use-local-storage";
 
 export default function Home() {
   const router = useRouter();
+  const [darkMode, setDarkMode] = useState(false);
   const [jokes, setJokes] = useState<
     {
       id: number;
@@ -58,10 +59,20 @@ export default function Home() {
     console.log(jokes);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  console.log(darkMode);
   return (
-    <div className=" h-screen w-screen overflow-hidden ">
-      <div className="h-full min-h-screen w-screen bg-white  dark:bg-slate-800">
-        <Header />
+    <div
+      className={clsx(
+        " h-screen w-screen overflow-hidden ",
+        {
+          "dark-mode": darkMode,
+        },
+        { "bg-white": !darkMode }
+      )}
+    >
+      <div className="h-full min-h-screen w-screen ">
+        <Header setDarkMode={setDarkMode} />
         <div className="px-8">
           <div className="flex mb-6">
             <div className=" justify-center items-center">

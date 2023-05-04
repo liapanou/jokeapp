@@ -1,16 +1,15 @@
 import clsx from "clsx";
 import { Html, Head, Main, NextScript } from "next/document";
-import useLocalStorage from "use-local-storage";
 
 export default function Document() {
-  const [theme, seTheme] = useLocalStorage<string>("theme", "light");
-  console.log(theme);
   return (
-    <Html lang="en" className={theme}>
+    <Html lang="en">
       <Head />
       <body>
-        <Main />
-        <NextScript />
+        <div>
+          <Main />
+          <NextScript />
+        </div>
       </body>
     </Html>
   );

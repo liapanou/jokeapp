@@ -1,9 +1,12 @@
 import Link from "next/link";
 import useLocalStorage from "use-local-storage";
 
-export function Header() {
+export function Header({
+  setDarkMode,
+}: {
+  setDarkMode: (param: boolean) => void;
+}) {
   const [token, seToken] = useLocalStorage<string | null>("token", null);
-  const [theme, seTheme] = useLocalStorage<string>("theme", "light");
 
   return (
     <div className="navbar bg-base-100 border border-b mb-10">
@@ -27,24 +30,22 @@ export function Header() {
             </Link>
             <ul className="p-2 bg-base-100">
               <li>
-                <Link
-                  href=""
+                <div
                   onClick={() => {
-                    seTheme("dark");
+                    setDarkMode(true);
                   }}
                 >
                   Dark mode
-                </Link>
+                </div>
               </li>
               <li>
-                <Link
-                  href=""
+                <div
                   onClick={() => {
-                    seTheme("light");
+                    setDarkMode(false);
                   }}
                 >
                   Light mode
-                </Link>
+                </div>
               </li>
             </ul>
           </li>
