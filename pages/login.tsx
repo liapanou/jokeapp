@@ -4,10 +4,9 @@ import { useState } from "react";
 import useLocalStorage from "use-local-storage";
 
 export default function Login() {
-  const [darkMode, setDarkMode] = useState(false);
   return (
     <div>
-      <Header setDarkMode={setDarkMode} />
+      <Header />
     </div>
   );
 }

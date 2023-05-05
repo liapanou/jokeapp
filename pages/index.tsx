@@ -1,4 +1,5 @@
 import { Header } from "@/components/header";
+
 import axios from "axios";
 import clsx from "clsx";
 import { format } from "date-fns";
@@ -8,7 +9,6 @@ import useLocalStorage from "use-local-storage";
 
 export default function Home() {
   const router = useRouter();
-  const [darkMode, setDarkMode] = useState(false);
   const [jokes, setJokes] = useState<
     {
       id: number;
@@ -19,6 +19,9 @@ export default function Home() {
       CreatedAt: string;
     }[]
   >([]);
+  const q = router.query;
+  const limit = router.query.limit as string;
+  const page = router.query.page as string;
 
   const [token, seToken] = useLocalStorage<string | null>("token", null);
 
@@ -43,6 +46,8 @@ export default function Home() {
     return `${localPart}@${maskedDomain}`;
   }
 
+  // when token is null it goes to the login page
+
   useEffect(() => {
     if (!token) {
       router.push("/login");
@@ -53,38 +58,52 @@ export default function Home() {
   // brings the data from the server in every render and saves them in a state
 
   useEffect(() => {
-    axios.get("https://retoolapi.dev/zu9TVE/jokes").then((e) => {
-      setJokes(e.data);
-    });
-    console.log(jokes);
+    axios
+      .get(
+        `https://retoolapi.dev/zu9TVE/jokes?_page=${page ?? 0}&_limit=${
+          limit ?? 5
+        }`
+      )
+      .then((e) => {
+        setJokes(e.data);
+      });
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  console.log(darkMode);
+  }, [limit]);
+  console.log(limit);
   return (
-    <div
-      className={clsx(
-        " h-screen w-screen overflow-hidden ",
-        {
-          "dark-mode": darkMode,
-        },
-        { "bg-white": !darkMode }
-      )}
-    >
+    <div className="  h-screen w-screen overflow-hidden ">
       <div className="h-full min-h-screen w-screen ">
-        <Header setDarkMode={setDarkMode} />
+        <Header />
         <div className="px-8">
-          <div className="flex mb-6">
-            <div className=" justify-center items-center">
-              <select className=" select select-ghost w-full max-w-xs border-none">
-                <option>Show 5 jokes</option>
-                <option>Show 10 jokes</option>
-              </select>
-            </div>
+          <div className="flex justify-center items-center gap-6 mb-6">
+            <select
+              value={+limit}
+              className=" select select-bordered w-full max-w-xs "
+              onChange={(evt) => {
+                router.push({
+                  query: { ...q, limit: evt.currentTarget.value },
+                });
+              }}
+            >
+              <option value={5}>Show 5 jokes</option>
+              <option value={10}>Show 10 jokes</option>
+            </select>
 
-            <button className=" btn bg-black  normal-case w-auto h-fit px-4 py-4 mr-6 ">
+            <button className=" btn  normal-case w-auto h-fit px-4 py-4 mr-6 ">
               <span className="text-lg mr-2"> + </span>
-              <span className="text-lg">New Joke</span>
+              <span
+                className="text-lg"
+                onClick={() =>
+                  router.push(
+                    router.asPath.includes("?")
+                      ? `/a?page=${page}&limit=${limit}`
+                      : "/a"
+                  )
+                }
+              >
+                New Joke
+              </span>
             </button>
           </div>
 
@@ -97,6 +116,7 @@ export default function Home() {
                   <th className="px-6 py-2">Author</th>
                   <th className="px-6 py-2">Created Date</th>
                   <th className="px-6 py-2">Views</th>
+                  <th className="px-6 py-2">Action</th>
                 </tr>
               </thead>
               {/* body */}
@@ -104,7 +124,12 @@ export default function Home() {
                 {jokes.map((j, idx) => {
                   return (
                     <tr key={j.id} className="hover cursor-pointer  ">
-                      <td className="border-r border-black px-4 py-2 ">
+                      <td
+                        className="border-r border-black px-4 py-2 hover:underline"
+                        onClick={() => {
+                          router.push(`/${j.id}`);
+                        }}
+                      >
                         {j.Title}
                       </td>
                       <td className="border-r border-black px-4 py-2  ">
@@ -133,15 +158,50 @@ export default function Home() {
                       >
                         {j.Views}
                       </td>
+
+                      <td
+                        // onClick={() => {
+                        //   console.log("delete");
+                        //   axios
+                        //     .delete(
+                        //       ` https://retoolapi.dev/zu9TVE/jokes/${j.id}`
+                        //     )
+                        //     .then((response) => {
+                        //       setJokes(jokes.filter((pr) => pr.id !== j.id));
+                        //     });
+                        // }}
+                        className="px-4 py-2"
+                      >
+                        🗑️
+                      </td>
                     </tr>
+                    // deletes the selected joke and saves the new list of jokes
                   );
                 })}
               </tbody>
             </table>
           </div>
           <div className="flex justify-center items-center ">
-            <button className="font-bold mr-8">{"< Prev"}</button>
-            <button className="font-bold">{"Next >"}</button>
+            <button
+              className="font-bold mr-8"
+              onClick={() => {
+                router.push({
+                  query: { ...q, page: +page - 1 },
+                });
+              }}
+            >
+              {"< Prev"}
+            </button>
+            <button
+              className="font-bold"
+              onClick={() => {
+                router.push({
+                  query: { ...q, page: +page + 1 },
+                });
+              }}
+            >
+              {"Next >"}
+            </button>
           </div>
         </div>
       </div>
