@@ -7,18 +7,19 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import useLocalStorage from "use-local-storage";
 
+export type Joke = {
+  id: number;
+  Title: string;
+  Body: string;
+  Author: string;
+  Views: number;
+  CreatedAt: string;
+};
+
 export default function Home() {
   const router = useRouter();
-  const [jokes, setJokes] = useState<
-    {
-      id: number;
-      Title: string;
-      Body: string;
-      Author: string;
-      Views: number;
-      CreatedAt: string;
-    }[]
-  >([]);
+  const [jokes, setJokes] = useState<Joke[]>([]);
+  const [counter, setCounter] = useState<number>(0);
   const q = router.query;
   const limit = router.query.limit as string;
   const page = router.query.page as string;
@@ -28,21 +29,27 @@ export default function Home() {
   // converts the numeric date to the full date
 
   function formatDate(dateString: string) {
-    return format(new Date(dateString), "dd MMM yyy");
+    try {
+      return format(new Date(dateString), "dd MMM yyy");
+    } catch (err) {
+      return "Invalid Date";
+    }
   }
 
   // hides part of the email with ***!
 
   function maskEmailDomain(email: string) {
-    const [localPart, domain] = email.split("@");
-    const domainParts = domain.split(".");
+    const [localPart, domain] = email?.split("@");
+    const domainParts = domain?.split(".");
     const maskedDomain =
-      domainParts
-        .slice(0, -1)
-        .map((part) => "*".repeat(part.length))
-        .join(".") +
-      "." +
-      domainParts.slice(-1);
+      domainParts?.length > 1
+        ? domainParts
+            .slice(0, -1)
+            .map((part) => "*".repeat(part.length))
+            .join(".") +
+          "." +
+          domainParts.slice(-1)
+        : domainParts?.join("");
     return `${localPart}@${maskedDomain}`;
   }
 
@@ -60,17 +67,18 @@ export default function Home() {
   useEffect(() => {
     axios
       .get(
-        `https://retoolapi.dev/zu9TVE/jokes?_page=${page ?? 0}&_limit=${
-          limit ?? 5
-        }`
+        `https://retoolapi.dev/zu9TVE/jokes?_sort=createdat&_order=asc&_page=${
+          !page ? 0 : page
+        }&_limit=${limit ?? 5}`
       )
       .then((e) => {
         setJokes(e.data);
       });
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [limit]);
-  console.log(limit);
+  }, [limit, page, counter]);
+  console.log(counter);
+
   return (
     <div className="  h-screen w-screen overflow-hidden ">
       <div className="h-full min-h-screen w-screen ">
@@ -92,16 +100,7 @@ export default function Home() {
 
             <button className=" btn  normal-case w-auto h-fit px-4 py-4 mr-6 ">
               <span className="text-lg mr-2"> + </span>
-              <span
-                className="text-lg"
-                onClick={() =>
-                  router.push(
-                    router.asPath.includes("?")
-                      ? `/a?page=${page}&limit=${limit}`
-                      : "/a"
-                  )
-                }
-              >
+              <span className="text-lg" onClick={() => router.push("/new")}>
                 New Joke
               </span>
             </button>
@@ -160,16 +159,15 @@ export default function Home() {
                       </td>
 
                       <td
-                        // onClick={() => {
-                        //   console.log("delete");
-                        //   axios
-                        //     .delete(
-                        //       ` https://retoolapi.dev/zu9TVE/jokes/${j.id}`
-                        //     )
-                        //     .then((response) => {
-                        //       setJokes(jokes.filter((pr) => pr.id !== j.id));
-                        //     });
-                        // }}
+                        onClick={() => {
+                          axios
+                            .delete(
+                              ` https://retoolapi.dev/zu9TVE/jokes/${j.id}`
+                            )
+                            .then((response) => {
+                              setCounter(counter + 1);
+                            });
+                        }}
                         className="px-4 py-2"
                       >
                         🗑️
@@ -186,7 +184,10 @@ export default function Home() {
               className="font-bold mr-8"
               onClick={() => {
                 router.push({
-                  query: { ...q, page: +page - 1 },
+                  query: {
+                    ...q,
+                    page: !page ? 0 : +page - 1,
+                  },
                 });
               }}
             >
@@ -196,7 +197,7 @@ export default function Home() {
               className="font-bold"
               onClick={() => {
                 router.push({
-                  query: { ...q, page: +page + 1 },
+                  query: { ...q, page: !page ? 0 : +page + 1 },
                 });
               }}
             >

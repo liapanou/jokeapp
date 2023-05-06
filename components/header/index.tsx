@@ -7,7 +7,7 @@ export function Header() {
   return (
     <div className="navbar  border border-b mb-10">
       <div className="flex-1 pl-4">
-        <h2 className=" font-bold text-xl">JokeApp</h2>
+        <h2 className=" font-bold text-xl">JokeApp 😂</h2>
       </div>
       <div className="flex-none">
         <ul className="menu menu-horizontal bg-base-100 px-1">

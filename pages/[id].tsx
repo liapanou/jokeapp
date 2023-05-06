@@ -1,9 +1,29 @@
 import { Header } from "@/components/header";
 import axios from "axios";
 import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
+import { Joke } from ".";
 
 export default function JokeForm() {
   const router = useRouter();
+  const jid = router.query.id;
+
+  const [jokeTitle, setJokeTitle] = useState<string>("");
+  const [jokeAuthor, setJokeAuthor] = useState<string>("");
+  const [jokeViews, setJokeViews] = useState<number>(0);
+  const [jokeCreatedAt, setJokeCreatedAt] = useState<string>("");
+
+  useEffect(() => {
+    if (jid !== "new" && jid)
+      axios.get<Joke>(`https://retoolapi.dev/zu9TVE/jokes/${jid}`).then((e) => {
+        setJokeTitle(e.data?.Title);
+        setJokeAuthor(e.data?.Author);
+        setJokeViews(e.data?.Views);
+        setJokeCreatedAt(e.data?.CreatedAt);
+      });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [jid]);
+
   return (
     <div className="  h-screen w-screen overflow-hidden ">
       <div className="h-full min-h-screen w-screen ">
@@ -12,29 +32,32 @@ export default function JokeForm() {
           <form
             className="p-16"
             onSubmit={(e) => {
-              //   e.preventDefault();
-              //   if (id) {
-              //     axios
-              //       .put(`/api/projects?id=${id}`, {
-              //         name: projectName,
-              //         url: projectUrl,
-              //       })
-              //       .then((response) => {
-              //         setProjects([
-              //           response.data,
-              //           ...projects.filter((pr) => pr.id !== response.data.id),
-              //         ]);
-              //       });
-              //   } else {
-              //     axios
-              //       .post("/api/projects", {
-              //         name: projectName,
-              //         url: projectUrl,
-              //       })
-              //       .then((response) => {
-              //         setProjects([response.data, ...projects]);
-              //       });
-              //   }
+              e.preventDefault(); // stops the rerender of the page which is caused when you submit the form
+              if (jid === "new") {
+                axios
+                  .post("https://retoolapi.dev/zu9TVE/jokes", {
+                    Title: jokeTitle,
+                    Body: "",
+                    Author: jokeAuthor,
+                    Views: jokeViews,
+                    CreatedAt: jokeCreatedAt,
+                  })
+                  .then((response) => {
+                    router.push("/");
+                  });
+              } else {
+                axios
+                  .put(`https://retoolapi.dev/zu9TVE/jokes/${jid}`, {
+                    Title: jokeTitle,
+                    Body: "",
+                    Author: jokeAuthor,
+                    Views: jokeViews,
+                    CreatedAt: jokeCreatedAt,
+                  })
+                  .then((response) => {
+                    router.push("/");
+                  });
+              }
             }}
           >
             <h2 className=" font-bold text-2xl mb-8 text-center">Joke Form</h2>
@@ -48,6 +71,9 @@ export default function JokeForm() {
                 id="title"
                 type="text"
                 placeholder="Joke Title"
+                onChange={(evt) => setJokeTitle(evt.currentTarget.value)}
+                value={jokeTitle}
+                required
               />
             </div>
             <div className="mb-4">
@@ -59,6 +85,9 @@ export default function JokeForm() {
                 id="author"
                 type="email"
                 placeholder="name@email.com"
+                onChange={(evt) => setJokeAuthor(evt.currentTarget.value)}
+                value={jokeAuthor}
+                required
               />
             </div>
             <div className="mb-4">
@@ -71,8 +100,11 @@ export default function JokeForm() {
               <input
                 className="appearance-none block w-full bg-gray-200 text-gray-700 border border-red-500 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
                 id="createdDate"
-                type="text"
-                placeholder="23 Feb 2022"
+                type="date"
+                placeholder="2023-04-27"
+                onChange={(evt) => setJokeCreatedAt(evt.currentTarget.value)}
+                value={jokeCreatedAt}
+                required
               />
             </div>
             <div className="mb-8">
@@ -84,6 +116,11 @@ export default function JokeForm() {
                 id="views"
                 type="number"
                 placeholder="Number of Views"
+                onChange={(evt) =>
+                  setJokeViews(Number(evt.currentTarget.value))
+                }
+                value={jokeViews}
+                required
               />
             </div>
             <div className="form-control">
@@ -96,6 +133,7 @@ export default function JokeForm() {
                     router.push("/");
                   }}
                   className="btn bg-blue-700 hover:bg-blue-700 normal-case text-lg"
+                  type="submit"
                 >
                   Cancel
                 </button>
