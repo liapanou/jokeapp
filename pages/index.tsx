@@ -22,7 +22,7 @@ export default function Home() {
   const [counter, setCounter] = useState<number>(0);
   const q = router.query;
   const limit = router.query.limit as string;
-  const page = router.query.page as string;
+  const page = Number(!router.query.page ? 1 : router.query.page);
 
   const [token, seToken] = useLocalStorage<string | null>("token", null);
 
@@ -62,43 +62,29 @@ export default function Home() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token]);
 
-  // brings the data from the server in every render and saves them in a state
+  // brings the data from the server in the first render and when something in the dependency array changes and saves them in a state
 
   useEffect(() => {
     axios
       .get(
-        `https://retoolapi.dev/zu9TVE/jokes?_sort=createdat&_order=asc&_page=${
-          !page ? 0 : page
-        }&_limit=${limit ?? 5}`
-      )
+        `https://retoolapi.dev/zu9TVE/jokes?_sort=id&_order=desc&_page=${page}&_limit=${
+          limit ?? 5
+        }`
+      ) // sort is to organize by some category(e.g.id) and order desc is to organize by largest value first
       .then((e) => {
         setJokes(e.data);
       });
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [limit, page, counter]);
-  console.log(counter);
 
   return (
     <div className="  h-screen w-screen overflow-hidden ">
       <div className="h-full min-h-screen w-screen ">
         <Header />
         <div className="px-8">
-          <div className="flex justify-center items-center gap-6 mb-6">
-            <select
-              value={+limit}
-              className=" select select-bordered w-full max-w-xs "
-              onChange={(evt) => {
-                router.push({
-                  query: { ...q, limit: evt.currentTarget.value },
-                });
-              }}
-            >
-              <option value={5}>Show 5 jokes</option>
-              <option value={10}>Show 10 jokes</option>
-            </select>
-
-            <button className=" btn  normal-case w-auto h-fit px-4 py-4 mr-6 ">
+          <div className="flex   mb-6">
+            <button className=" btn btn-sm  normal-case w-auto h-fit px-4 py-4 mr-6 ml-auto ">
               <span className="text-lg mr-2"> + </span>
               <span className="text-lg" onClick={() => router.push("/new")}>
                 New Joke
@@ -179,25 +165,43 @@ export default function Home() {
               </tbody>
             </table>
           </div>
+          <div className="grid place-items-center">
+            <select
+              value={+limit}
+              className=" select select-bordered w-fit "
+              onChange={(evt) => {
+                router.push({
+                  query: { ...q, limit: evt.currentTarget.value },
+                });
+              }}
+            >
+              <option value={5}>Show 5 jokes</option>
+              <option value={10}>Show 10 jokes</option>
+            </select>
+          </div>
+          <br />
+
           <div className="flex justify-center items-center ">
             <button
-              className="font-bold mr-8"
+              className="disabled:opacity-20 font-bold "
               onClick={() => {
                 router.push({
                   query: {
                     ...q,
-                    page: !page ? 0 : +page - 1,
+                    page: page - 1,
                   },
                 });
               }}
+              disabled={page === 1}
             >
               {"< Prev"}
             </button>
+            <div className="mx-8 font-bold"> page: {page}</div>
             <button
               className="font-bold"
               onClick={() => {
                 router.push({
-                  query: { ...q, page: !page ? 0 : +page + 1 },
+                  query: { ...q, page: page + 1 },
                 });
               }}
             >

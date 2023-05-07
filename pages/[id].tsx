@@ -67,7 +67,7 @@ export default function JokeForm() {
               </label>
 
               <input
-                className="appearance-none block w-full bg-gray-200 text-gray-700 border border-red-500 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
+                className="appearance-none block w-full bg-gray-200 text-gray-700 border rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
                 id="title"
                 type="text"
                 placeholder="Joke Title"
@@ -81,7 +81,7 @@ export default function JokeForm() {
                 Author
               </label>
               <input
-                className="appearance-none block w-full bg-gray-200 text-gray-700 border border-red-500 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
+                className="peer appearance-none block w-full bg-gray-200 text-gray-700 border invalid:border-pink-500 invalid:ring-pink-500  rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
                 id="author"
                 type="email"
                 placeholder="name@email.com"
@@ -89,6 +89,9 @@ export default function JokeForm() {
                 value={jokeAuthor}
                 required
               />
+              <p className="invisible mt-2 text-sm text-pink-600 peer-invalid:visible">
+                Please provide a valid email address.
+              </p>
             </div>
             <div className="mb-4">
               <label
@@ -98,7 +101,7 @@ export default function JokeForm() {
                 Created Date
               </label>
               <input
-                className="appearance-none block w-full bg-gray-200 text-gray-700 border border-red-500 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
+                className="appearance-none block w-full bg-gray-200 text-gray-700 border rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
                 id="createdDate"
                 type="date"
                 placeholder="2023-04-27"
@@ -112,7 +115,7 @@ export default function JokeForm() {
                 Views
               </label>
               <input
-                className="appearance-none block w-full bg-gray-200 text-gray-700 border border-red-500 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
+                className="appearance-none block w-full bg-gray-200 text-gray-700 border rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
                 id="views"
                 type="number"
                 placeholder="Number of Views"
@@ -123,6 +126,7 @@ export default function JokeForm() {
                 required
               />
             </div>
+
             <div className="form-control">
               <div className=" flex justify-center gap-4  ">
                 <button className="btn bg-blue-700 hover:bg-blue-700 normal-case text-lg">
