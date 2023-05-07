@@ -1,4 +1,4 @@
-Demo: jokeapp-ten.vercel.app
+Demo: https://jokeapp-ten.vercel.app/
 
 # Assignment
 
