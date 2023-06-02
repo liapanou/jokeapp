@@ -25,7 +25,7 @@ export function Header() {
               </svg>
             </Link>
 
-            <ul className="p-2 ">
+            <ul className="p-2 bg-base-100 ">
               {["light", "dark"].map((theme) => (
                 <li key={theme}>
                   <div
