@@ -84,9 +84,9 @@ export default function Home() {
         <Header />
         <div className="px-8">
           <div className="flex   mb-6">
-            <button className=" btn btn-sm  normal-case w-auto h-fit px-4 py-4 mr-6 ml-auto ">
+            <button className=" btn btn-sm  normal-case w-auto h-fit px-4 py-4 mr-6 ml-auto " onClick={() => router.push("/new")} >
               <span className="text-lg mr-2"> + </span>
-              <span className="text-lg" onClick={() => router.push("/new")}>
+              <span className="text-lg" >
                 New Joke
               </span>
             </button>
